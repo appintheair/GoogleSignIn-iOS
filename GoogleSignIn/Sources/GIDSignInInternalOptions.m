@@ -21,23 +21,36 @@ NS_ASSUME_NONNULL_BEGIN
 @implementation GIDSignInInternalOptions
 
 + (instancetype)defaultOptionsWithConfiguration:(nullable GIDConfiguration *)configuration
-                       presentingViewController:
-                           (nullable UIViewController *)presentingViewController
+                       presentingViewController:(nullable UIViewController *)presentingViewController
                                       loginHint:(nullable NSString *)loginHint
                                   addScopesFlow:(BOOL)addScopesFlow
                                        callback:(nullable GIDSignInCallback)callback {
-  GIDSignInInternalOptions *options = [[GIDSignInInternalOptions alloc] init];
-  if (options) {
-    options->_interactive = YES;
-    options->_continuation = NO;
-    options->_addScopesFlow = addScopesFlow;
-    options->_configuration = configuration;
-    options->_presentingViewController = presentingViewController;
-    options->_loginHint = loginHint;
-    options->_callback = callback;
-    options->_scopes = [GIDScopes scopesWithBasicProfile:@[]];
-  }
-  return options;
+    return [self defaultOptionsWithConfiguration:configuration
+                                additionalScopes:@[]
+                        presentingViewController:presentingViewController
+                                       loginHint:loginHint
+                                   addScopesFlow:addScopesFlow
+                                        callback:callback];
+}
+
++ (instancetype)defaultOptionsWithConfiguration:(nullable GIDConfiguration *)configuration
+                               additionalScopes:(NSArray<NSString *> *)additionalScopes
+                       presentingViewController:(nullable UIViewController *)presentingViewController
+                                      loginHint:(nullable NSString *)loginHint
+                                  addScopesFlow:(BOOL)addScopesFlow
+                                       callback:(GIDSignInCallback)callback {
+    GIDSignInInternalOptions *options = [[GIDSignInInternalOptions alloc] init];
+    if (options) {
+        options->_interactive = YES;
+        options->_continuation = NO;
+        options->_addScopesFlow = addScopesFlow;
+        options->_configuration = configuration;
+        options->_presentingViewController = presentingViewController;
+        options->_loginHint = loginHint;
+        options->_callback = callback;
+        options->_scopes = [GIDScopes scopesWithBasicProfile:additionalScopes];
+    }
+    return options;
 }
 
 + (instancetype)silentOptionsWithCallback:(GIDSignInCallback)callback {
